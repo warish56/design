@@ -1,12 +1,14 @@
 const Logo = require("./../schema/LogoSchema");
-const validateId = require('./../helper/ValidateId');
+const validateId = require("./../helper/ValidateId");
+const getImagePath = require("./../helper/GetPath");
 
-addLogo = async params => {
+addLogo = async (params, file) => {
   const dataObject = {
     name: params.name,
     description: params.description,
     author: params.author,
-    tag: params.tag
+    tag: params.tag,
+    image: file.path
   };
   const logo = new Logo(dataObject);
   const result = await logo.save();
@@ -16,6 +18,10 @@ addLogo = async params => {
 getAllLogos = async () => {
   const queryResult = await Logo.find().populate("author");
   if (queryResult.length !== 0) {
+    //  setting image path
+    queryResult.forEach((item, index) => {
+      if (item.image) queryResult[index].image = getImagePath(item.image);
+    });
     return queryResult;
   } else {
     return 0;
@@ -23,16 +29,15 @@ getAllLogos = async () => {
 };
 
 getSpecificLogo = async id => {
-  if(!validateId(id))
-  return 0;
+  if (!validateId(id)) return 0;
   const queryResult = await Logo.findById(id).populate("author");
+  queryResult.image = getImagePath(queryResult.image);
   if (queryResult) return queryResult;
   else return 0;
 };
 
 updateLogo = async (id, params) => {
-  if(!validateId(id))
-  return 0;
+  if (!validateId(id)) return 0;
   const queryResult = await Logo.findById(id);
   if (!queryResult) return 0;
   const newLogoObject = {

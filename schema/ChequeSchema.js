@@ -26,6 +26,10 @@ const ChequeSchema = new mongoose.Schema({
       },
       message: "A tag must be provided"
     }
+  },
+  image: {
+    type: String,
+    required: true
   }
 });
 

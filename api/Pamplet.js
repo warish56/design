@@ -1,12 +1,16 @@
 const express = require("express");
 const router = express.Router();
+const Storage = require("./../multer/Storage");
 const PampletActions = require("./../actions/PampletActions");
 const HandleError = require("./../errors/HandleErrors");
 
+const upload = Storage.pampletImageStorage();
+
 router.post(
   "/",
+  upload.single("image"),
   HandleError(async (req, res) => {
-    const result = await PampletActions.addPamplet(req.body);
+    const result = await PampletActions.addPamplet(req.body, req.file);
     res.status(200).send(result);
   })
 );

@@ -1,12 +1,15 @@
 const express = require("express");
 const router = express.Router();
+const Storage = require("./../multer/Storage");
 const LogoActions = require("./../actions/LogoActions");
 const HandleError = require("./../errors/HandleErrors");
 
+const upload = Storage.logoImageStorage();
 router.post(
   "/",
+  upload.single("image"),
   HandleError(async (req, res) => {
-    const result = await LogoActions.addLogo(req.body);
+    const result = await LogoActions.addLogo(req.body, req.file);
     res.status(200).send(result);
   })
 );

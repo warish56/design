@@ -42,6 +42,11 @@ listenToDifferentRoutes = () => {
 };
 
 applyMiddelware = () => {
+  app.use("/logo", express.static("uploads/logoImages"));
+  app.use("/poster", express.static("uploads/posterImages"));
+  app.use("/pamplet", express.static("uploads/pampletsImages"));
+  app.use("/certificate", express.static("uploads/certificateImages"));
+  app.use("/cheque", express.static("uploads/chequeImages"));
   app.use(express.json());
 };
 

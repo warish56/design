@@ -3,6 +3,7 @@ function handleError(handler) {
     try {
       await handler(req, res);
     } catch (er) {
+      console.log(er);
       let errorArray = [];
       for (fields in er.errors)
         errorArray = [...errorArray, er.errors[fields].message];

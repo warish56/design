@@ -1,12 +1,14 @@
 const Cheque = require("./../schema/ChequeSchema");
 const validateId = require("./../helper/ValidateId");
+const getImagePath = require("./../helper/GetPath");
 
-addCheque = async params => {
+addCheque = async (params, file) => {
   const dataObject = {
     name: params.name,
     description: params.description,
     author: params.author,
-    tag: params.tag
+    tag: params.tag,
+    image: file.path
   };
   const cheque = new Cheque(dataObject);
   const result = await cheque.save();
@@ -16,6 +18,10 @@ addCheque = async params => {
 getAllCheques = async () => {
   const queryResult = await Cheque.find().populate("author");
   if (queryResult.length !== 0) {
+    //  setting image path
+    queryResult.forEach((item, index) => {
+      if (item.image) queryResult[index].image = getImagePath(item.image);
+    });
     return queryResult;
   } else {
     return 0;
@@ -25,6 +31,7 @@ getAllCheques = async () => {
 getSpecificCheque = async id => {
   if (!validateId(id)) return 0;
   const queryResult = await Cheque.findById(id).populate("author");
+  queryResult.image = getImagePath(queryResult.image);
   if (queryResult) return queryResult;
   else return 0;
 };

@@ -1,12 +1,16 @@
 const express = require("express");
 const router = express.Router();
+const Storage = require("./../multer/Storage");
 const CertificateActions = require("./../actions/CertificateActions");
 const HandleError = require("./../errors/HandleErrors");
 
+const upload = Storage.certificateImageStorage();
+
 router.post(
   "/",
+  upload.single("image"),
   HandleError(async (req, res) => {
-    const result = await CertificateActions.addCertificate(req.body);
+    const result = await CertificateActions.addCertificate(req.body, req.file);
     res.status(200).send(result);
   })
 );
@@ -15,6 +19,7 @@ router.get(
   "/",
   HandleError(async (req, res) => {
     const result = await CertificateActions.getAllCertificates();
+
     if (result) res.status(200).send(result);
     else res.status(404).send("Certificate database is empty");
   })

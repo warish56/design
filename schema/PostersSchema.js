@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const GetImagePath = require("./../helper/GetPath");
 const PosterSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -26,6 +27,10 @@ const PosterSchema = new mongoose.Schema({
       },
       message: "A tag must be provided"
     }
+  },
+  image: {
+    type: String,
+    required: true
   }
 });
 

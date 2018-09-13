@@ -1,12 +1,14 @@
 const Certificate = require("./../schema/CertificatesSchema");
 const validateId = require("./../helper/ValidateId");
+const getImagePath = require("./../helper/GetPath");
 
-addCertificate = async params => {
+addCertificate = async (params, file) => {
   const dataObject = {
     name: params.name,
     description: params.description,
     author: params.author,
-    tag: params.tag
+    tag: params.tag,
+    image: file.path
   };
   const certificate = new Certificate(dataObject);
   const result = await certificate.save();
@@ -16,6 +18,10 @@ addCertificate = async params => {
 getAllCertificates = async () => {
   const queryResult = await Certificate.find().populate("author");
   if (queryResult.length !== 0) {
+    //  setting image path
+    queryResult.forEach((item, index) => {
+      if (item.image) queryResult[index].image = getImagePath(item.image);
+    });
     return queryResult;
   } else {
     return 0;
@@ -25,6 +31,7 @@ getAllCertificates = async () => {
 getSpecificCertificate = async id => {
   if (!validateId(id)) return 0;
   const queryResult = await Certificate.findById(id).populate("author");
+  queryResult.image = getImagePath(queryResult.image);
   if (queryResult) return queryResult;
   else return 0;
 };

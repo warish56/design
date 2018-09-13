@@ -1,12 +1,14 @@
 const Poster = require("./../schema/PostersSchema");
 const validateId = require("./../helper/ValidateId");
+const getImagePath = require("./../helper/GetPath");
 
-addPoster = async params => {
+addPoster = async (params, file) => {
   const dataObject = {
     name: params.name,
     description: params.description,
     author: params.author,
-    tag: params.tag
+    tag: params.tag,
+    image: file.path
   };
   const poster = new Poster(dataObject);
   const result = await poster.save();
@@ -16,6 +18,10 @@ addPoster = async params => {
 getAllPosters = async () => {
   const queryResult = await Poster.find().populate("author");
   if (queryResult.length !== 0) {
+    //  setting image path
+    queryResult.forEach((item, index) => {
+      if (item.image) queryResult[index].image = getImagePath(item.image);
+    });
     return queryResult;
   } else {
     return 0;
@@ -25,6 +31,7 @@ getAllPosters = async () => {
 getSpecificPoster = async id => {
   if (!validateId(id)) return 0;
   const queryResult = await Poster.findById(id).populate("author");
+  queryResult.image = getImagePath(queryResult.image);
   if (queryResult) return queryResult;
   else return 0;
 };
