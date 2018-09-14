@@ -3,11 +3,13 @@ const router = express.Router();
 const Storage = require("./../multer/Storage");
 const ChequeActions = require("./../actions/ChequeActions");
 const HandleError = require("./../errors/HandleErrors");
+const AuthActions = require("./../actions/AuthActions");
 
 const upload = Storage.chequeImageStorage();
 
 router.post(
   "/",
+  AuthActions.validateToken(),
   upload.single("image"),
   HandleError(async (req, res) => {
     const result = await ChequeActions.addCheque(req.body, req.file);
@@ -35,6 +37,7 @@ router.get(
 
 router.patch(
   "/:id",
+  AuthActions.validateToken(),
   HandleError(async (req, res) => {
     const result = await ChequeActions.updateCheque(req.params.id, req.body);
     if (result) res.status(200).send(result);

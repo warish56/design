@@ -3,11 +3,13 @@ const router = express.Router();
 const Storage = require("./../multer/Storage");
 const CertificateActions = require("./../actions/CertificateActions");
 const HandleError = require("./../errors/HandleErrors");
+const AuthActions = require("./../actions/AuthActions");
 
 const upload = Storage.certificateImageStorage();
 
 router.post(
   "/",
+  AuthActions.validateToken(),
   upload.single("image"),
   HandleError(async (req, res) => {
     const result = await CertificateActions.addCertificate(req.body, req.file);
@@ -39,6 +41,7 @@ router.get(
 
 router.patch(
   "/:id",
+  AuthActions.validateToken(),
   HandleError(async (req, res) => {
     const result = await CertificateActions.updateCertificate(
       req.params.id,

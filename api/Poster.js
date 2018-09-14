@@ -3,10 +3,12 @@ const router = express.Router();
 const Storage = require("./../multer/Storage");
 const PosterActions = require("./../actions/PosterActions");
 const HandleError = require("./../errors/HandleErrors");
+const AuthActions = require("./../actions/AuthActions");
 
 const upload = Storage.posterImageStorage();
 router.post(
   "/",
+  AuthActions.validateToken(),
   upload.single("image"),
   HandleError(async (req, res) => {
     const result = await PosterActions.addPoster(req.body, req.file);
@@ -34,6 +36,7 @@ router.get(
 
 router.patch(
   "/:id",
+  AuthActions.validateToken(),
   HandleError(async (req, res) => {
     const result = await PosterActions.updatePoster(req.params.id, req.body);
     if (result) res.status(200).send(result);

@@ -15,11 +15,17 @@ const AuthorSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   expreience: {
     type: Number,
     default: 0
+  },
+  password: {
+    type: String,
+    minlength: 6,
+    required: true
   }
 });
 

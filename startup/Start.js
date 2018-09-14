@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
+const config = require("config");
 
+const AuthRouter = require("./../api/Auth");
 const AuthorRouter = require("./../api/Author");
 const LogoRouter = require("./../api/Logo");
 const PosterRouter = require("./../api/Poster");
@@ -28,6 +30,7 @@ startListeningToRoutes = () => {
 };
 
 listenToDifferentRoutes = () => {
+  app.use("/auth", AuthRouter);
   app.use("/logo", LogoRouter);
   app.use("/author", AuthorRouter);
   app.use("/poster", PosterRouter);
@@ -42,6 +45,11 @@ listenToDifferentRoutes = () => {
 };
 
 applyMiddelware = () => {
+  // if (!config.get("jwtPrivateKey")) process.exit(1);
+  // else {
+  //   console.log(config.get("jwtPrivateKey"));
+  // }
+
   app.use("/logo", express.static("uploads/logoImages"));
   app.use("/poster", express.static("uploads/posterImages"));
   app.use("/pamplet", express.static("uploads/pampletsImages"));
