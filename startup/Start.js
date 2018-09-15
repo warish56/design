@@ -22,7 +22,7 @@ connectToMongoDb = () => {
     });
 };
 
-startListeningToRoutes = () => {
+startListeningToPort = () => {
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
     console.log(`listning to port ${port}`);
@@ -40,25 +40,24 @@ listenToDifferentRoutes = () => {
 
   //  Handelling Error At Last Stage
   app.use((err, req, res, next) => {
+    // console.log(err);
     res.status(500).send(err);
   });
 };
 
 applyMiddelware = () => {
-  // if (!config.get("jwtPrivateKey")) process.exit(1);
-  // else {
-  //   console.log(config.get("jwtPrivateKey"));
-  // }
-
+  if (!config.get("jwtPrivateKey")) {
+    process.exit(1);
+  }
+  app.use(express.json());
   app.use("/logo", express.static("uploads/logoImages"));
   app.use("/poster", express.static("uploads/posterImages"));
   app.use("/pamplet", express.static("uploads/pampletsImages"));
   app.use("/certificate", express.static("uploads/certificateImages"));
   app.use("/cheque", express.static("uploads/chequeImages"));
-  app.use(express.json());
 };
 
 module.exports.connectToMongoDb = connectToMongoDb;
-module.exports.startListeningToRoutes = startListeningToRoutes;
+module.exports.startListeningToPort = startListeningToPort;
 module.exports.listenToDifferentRoutes = listenToDifferentRoutes;
 module.exports.applyMiddelware = applyMiddelware;

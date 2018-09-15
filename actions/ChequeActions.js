@@ -10,6 +10,7 @@ addCheque = async (params, file) => {
     tag: params.tag,
     image: file.path
   };
+  if (dataObject.likes) dataObject.likes = params.likes;
   const cheque = new Cheque(dataObject);
   const result = await cheque.save();
   return result;

@@ -10,6 +10,7 @@ addPoster = async (params, file) => {
     tag: params.tag,
     image: file.path
   };
+  if (dataObject.likes) dataObject.likes = params.likes;
   const poster = new Poster(dataObject);
   const result = await poster.save();
   return result;

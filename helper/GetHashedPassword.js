@@ -6,11 +6,15 @@ getHashedPassword = async password => {
   return hashedPassword;
 };
 
-verifyHashedPassword = (
+verifyHashedPassword = async (
   originalPassword_sent_by_client,
   storedHashedPassword
 ) => {
-  return bcrypt.compare(originalPassword_sent_by_client, storedHashedPassword);
+  const result = await bcrypt.compare(
+    originalPassword_sent_by_client,
+    storedHashedPassword
+  );
+  return result;
 };
 
 module.exports.getHashedPassword = getHashedPassword;

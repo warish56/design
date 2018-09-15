@@ -1,8 +1,12 @@
 const Author = require("./../schema/AuthorSchema");
 const validateId = require("./../helper/ValidateId");
 const Encrypt = require("./../helper/GetHashedPassword");
+const SendMail = require("./../email/SendMail");
+const Keys = require("./../jwt/Keys");
 
 addAuthor = async params => {
+  // create a hashed password
+  // send email verification link
   const isAuthorPresent = await Author.findOne({ email: params.email });
   if (isAuthorPresent) return 0;
 
@@ -13,10 +17,12 @@ addAuthor = async params => {
     phone: params.phone,
     password: await Encrypt.getHashedPassword(params.password)
   };
-  //  First Validate email and  Password
-  // create a hashed password
+
+  // Not required Field checking
+  if (params.experience) dataObject.experience = params.experience;
   const author = new Author(dataObject);
   const result = await author.save();
+  const successMail = await SendMail(params.email, token);
   return result;
 };
 

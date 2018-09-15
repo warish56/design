@@ -10,6 +10,7 @@ addPamplet = async (params, file) => {
     tag: params.tag,
     image: file.path
   };
+  if (dataObject.likes) dataObject.likes = params.likes;
   const pamplet = new Pamplet(dataObject);
   const result = await pamplet.save();
   return result;

@@ -10,6 +10,7 @@ addCertificate = async (params, file) => {
     tag: params.tag,
     image: file.path
   };
+  if (dataObject.likes) dataObject.likes = params.likes;
   const certificate = new Certificate(dataObject);
   const result = await certificate.save();
   return result;

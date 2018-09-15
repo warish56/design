@@ -10,6 +10,7 @@ addLogo = async (params, file) => {
     tag: params.tag,
     image: file.path
   };
+  if (dataObject.likes) dataObject.likes = params.likes;
   const logo = new Logo(dataObject);
   const result = await logo.save();
   return result;

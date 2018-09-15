@@ -18,7 +18,7 @@ const AuthorSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  expreience: {
+  experience: {
     type: Number,
     default: 0
   },
@@ -26,6 +26,10 @@ const AuthorSchema = new mongoose.Schema({
     type: String,
     minlength: 6,
     required: true
+  },
+  confirm: {
+    type: Boolean,
+    default: false
   }
 });
 

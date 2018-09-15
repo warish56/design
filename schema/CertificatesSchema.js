@@ -15,7 +15,9 @@ const CertificateSchema = new mongoose.Schema({
     required: true
   },
   likes: {
-    type: Number
+    type: Number,
+    min: 0,
+    default: 0
   },
   tag: {
     type: Array,

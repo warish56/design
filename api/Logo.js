@@ -4,13 +4,14 @@ const Storage = require("./../multer/Storage");
 const LogoActions = require("./../actions/LogoActions");
 const HandleError = require("./../errors/HandleErrors");
 const AuthActions = require("./../actions/AuthActions");
+const validateDesignes = require("./../validators/validateDesignes");
 
 const upload = Storage.logoImageStorage();
 router.post(
   "/",
   AuthActions.validateToken(),
-  AuthActions.validateToken(),
   upload.single("image"),
+  validateDesignes(),
   HandleError(async (req, res) => {
     const result = await LogoActions.addLogo(req.body, req.file);
     res.status(200).send(result);
@@ -38,7 +39,7 @@ router.get(
 router.patch(
   "/:id",
   AuthActions.validateToken(),
-  AuthActions.validateToken(),
+  validateDesignes(),
   HandleError(async (req, res) => {
     const result = await LogoActions.updateLogo(req.params.id, req.body);
     if (result) res.status(200).send(result);

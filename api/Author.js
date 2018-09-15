@@ -3,12 +3,16 @@ const router = express.Router();
 const AuthorActions = require("./../actions/AuthorActions");
 const HandleError = require("./../errors/HandleErrors");
 const AuthActions = require("./../actions/AuthActions");
+const validateAuthor = require("./../validators/validateAuthor");
+const jwt = require("jsonwebtoken");
+const config = require("config");
 
 router.post(
   "/",
+  validateAuthor(),
   HandleError(async (req, res) => {
     const result = await AuthorActions.addAuthor(req.body);
-    if (!result) res.status(400).send("Email Alredy registered");
+    if (!result) return res.status(400).send("Email Alredy registered");
     res.status(200).send(result);
   })
 );
