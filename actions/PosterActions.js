@@ -17,7 +17,10 @@ addPoster = async (params, file) => {
 };
 
 getAllPosters = async () => {
-  const queryResult = await Poster.find().populate("author");
+  const queryResult = await Poster.find().populate({
+    path: "author",
+    select: { name: 1, email: 1 }
+  });
   if (queryResult.length !== 0) {
     //  setting image path
     queryResult.forEach((item, index) => {
@@ -30,15 +33,16 @@ getAllPosters = async () => {
 };
 
 getSpecificPoster = async id => {
-  if (!validateId(id)) return 0;
-  const queryResult = await Poster.findById(id).populate("author");
+  const queryResult = await Poster.findById(id).populate({
+    path: "author",
+    select: { name: 1, email: 1 }
+  });
   queryResult.image = getImagePath(queryResult.image);
   if (queryResult) return queryResult;
   else return 0;
 };
 
 updatePoster = async (id, params) => {
-  if (!validateId(id)) return 0;
   const queryResult = await Poster.findById(id);
   if (!queryResult) return 0;
   const newPosterObject = {

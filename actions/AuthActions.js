@@ -1,25 +1,34 @@
 const Author = require("./../schema/AuthorSchema");
+const User = require("./../schema/UserSchema");
 const Encrypt = require("./../helper/GetHashedPassword");
 const Keys = require("./../jwt/Keys");
 
-validateAuthor = async (email, password) => {
+validatePerson = async (email, password, type) => {
   //  first validate email
   //  check the email is present or not
   //  validate password
 
-  const author = await Author.findOne({ email: email });
-  if (!author) return 0;
+  const person =
+    type === "author"
+      ? await Author.findOne({ email: email }).select({
+          name: 1,
+          email: 1,
+          phone: 1
+        })
+      : await User.findOne({ email: email });
+  if (!person) return 0;
 
   // first checking if email is verifed
-  if (!author.confirm) return 403;
+  if (!person.confirm) return 403;
   //  checking if author has valid password
-  const isAuthorPasswordValid = await Encrypt.verifyHashedPassword(
+  const isPersonPasswordValid = await Encrypt.verifyHashedPassword(
     password,
-    author.password
+    person.password
   );
-  if (!isAuthorPasswordValid) return 0;
-  const token = await Keys.getJwtToken({ id: author._id, email: author.email });
-  return token;
+  if (!isPersonPasswordValid) return 0;
+  const token = await Keys.getJwtToken({ id: person._id, email: person.email });
+  person.token = token;
+  return person;
 };
 
 validateToken = () => {
@@ -48,15 +57,27 @@ confirmAuhtorAccount = async id => {
   return result;
 };
 
-verifyEmail = async token => {
+confirmUserAccount = async id => {
+  const user = await User.findById(id);
+  user.confirm = true;
+  const result = await user.save();
+  return result;
+};
+
+verifyEmail = async (token, type) => {
   const result = Keys.verifyJwtToken(token);
   if (!result) return 0;
   else {
-    const updateSuccessResult = await confirmAuhtorAccount(result._id);
-    return updateSuccessResult;
+    const updateSuccessResult =
+      type === "author"
+        ? await confirmAuhtorAccount(result._id)
+        : await confirmUserAccount(result._id);
+
+    if (!updateSuccessResult) return -1;
+    else return 200;
   }
 };
 
-module.exports.validateAuthor = validateAuthor;
+module.exports.validatePerson = validatePerson;
 module.exports.validateToken = validateToken;
 module.exports.verifyEmail = verifyEmail;

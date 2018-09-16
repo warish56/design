@@ -1,6 +1,6 @@
 const validate = require("./BodyValidation");
 
-validateAuthor = () => {
+validateUser = () => {
   return (req, res, next) => {
     try {
       req.errors = [
@@ -13,13 +13,7 @@ validateAuthor = () => {
           .minlength(6)
           .isValid(),
         ...new validate("Phone", req.body.phone).required().isValid(),
-        ...new validate("Email", req.body.email).required().isValid(),
-        ...new validate("Description", req.body.description)
-          .required()
-          .minlength(10)
-          .maxlength(50)
-          .isValid(),
-        ...new validate("Experience", req.body.experience).min(0).isValid()
+        ...new validate("Email", req.body.email).required().isValid()
       ];
       console.log(req.errors);
       if (req.errors.length > 0) return res.status(400).send(req.errors[0]);
@@ -31,4 +25,4 @@ validateAuthor = () => {
   };
 };
 
-module.exports = validateAuthor;
+module.exports = validateUser;

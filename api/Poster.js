@@ -5,6 +5,7 @@ const PosterActions = require("./../actions/PosterActions");
 const HandleError = require("./../errors/HandleErrors");
 const AuthActions = require("./../actions/AuthActions");
 const validateDesignes = require("./../validators/validateDesignes");
+const validateMongooseId = require("./../validators/validateMongooseId");
 
 const upload = Storage.posterImageStorage();
 router.post(
@@ -29,6 +30,7 @@ router.get(
 
 router.get(
   "/:id",
+  validateMongooseId(),
   HandleError(async (req, res) => {
     const result = await PosterActions.getSpecificPoster(req.params.id);
     if (result) res.status(200).send(result);
@@ -39,6 +41,7 @@ router.get(
 router.patch(
   "/:id",
   AuthActions.validateToken(),
+  validateMongooseId(),
   validateDesignes(),
   HandleError(async (req, res) => {
     const result = await PosterActions.updatePoster(req.params.id, req.body);

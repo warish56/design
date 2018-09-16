@@ -5,6 +5,7 @@ const config = require("config");
 
 const AuthRouter = require("./../api/Auth");
 const AuthorRouter = require("./../api/Author");
+const UserRouter = require("./../api/User");
 const LogoRouter = require("./../api/Logo");
 const PosterRouter = require("./../api/Poster");
 const ChequeRouter = require("./../api/Cheque");
@@ -31,6 +32,7 @@ startListeningToPort = () => {
 
 listenToDifferentRoutes = () => {
   app.use("/auth", AuthRouter);
+  app.use("/user", UserRouter);
   app.use("/logo", LogoRouter);
   app.use("/author", AuthorRouter);
   app.use("/poster", PosterRouter);
@@ -47,6 +49,12 @@ listenToDifferentRoutes = () => {
 
 applyMiddelware = () => {
   if (!config.get("jwtPrivateKey")) {
+    console.log("JwtKey not found");
+    process.exit(1);
+  }
+
+  if (!config.get("emailKey")) {
+    console.log("emailKey not found");
     process.exit(1);
   }
   app.use(express.json());

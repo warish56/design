@@ -1,5 +1,4 @@
 const Pamplet = require("./../schema/PampletsSchema");
-const validateId = require("./../helper/ValidateId");
 const getImagePath = require("./../helper/GetPath");
 
 addPamplet = async (params, file) => {
@@ -17,7 +16,10 @@ addPamplet = async (params, file) => {
 };
 
 getAllPamplets = async () => {
-  const queryResult = await Pamplet.find().populate("author");
+  const queryResult = await Pamplet.find().populate({
+    path: "author",
+    select: { name: 1, email: 1 }
+  });
   if (queryResult.length !== 0) {
     //  setting image path
     queryResult.forEach((item, index) => {
@@ -30,15 +32,16 @@ getAllPamplets = async () => {
 };
 
 getSpecificPamplet = async id => {
-  if (!validateId(id)) return 0;
-  const queryResult = await Pamplet.findById(id).populate("author");
+  const queryResult = await Pamplet.findById(id).populate({
+    path: "author",
+    select: { name: 1, email: 1 }
+  });
   queryResult.image = getImagePath(queryResult.image);
   if (queryResult) return queryResult;
   else return 0;
 };
 
 updatePamplet = async (id, params) => {
-  if (!validateId(id)) return 0;
   const queryResult = await Pamplet.findById(id);
   if (!queryResult) return 0;
   const newPampletObject = {

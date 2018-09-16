@@ -5,6 +5,7 @@ const CertificateActions = require("./../actions/CertificateActions");
 const HandleError = require("./../errors/HandleErrors");
 const AuthActions = require("./../actions/AuthActions");
 const validateDesignes = require("./../validators/validateDesignes");
+const validateMongooseId = require("./../validators/validateMongooseId");
 
 const upload = Storage.certificateImageStorage();
 
@@ -31,6 +32,7 @@ router.get(
 
 router.get(
   "/:id",
+  validateMongooseId(),
   HandleError(async (req, res) => {
     const result = await CertificateActions.getSpecificCertificate(
       req.params.id
@@ -44,6 +46,7 @@ router.get(
 router.patch(
   "/:id",
   AuthActions.validateToken(),
+  validateMongooseId(),
   validateDesignes(),
   HandleError(async (req, res) => {
     const result = await CertificateActions.updateCertificate(

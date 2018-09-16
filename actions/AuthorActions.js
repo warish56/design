@@ -1,5 +1,4 @@
 const Author = require("./../schema/AuthorSchema");
-const validateId = require("./../helper/ValidateId");
 const Encrypt = require("./../helper/GetHashedPassword");
 const SendMail = require("./../email/SendMail");
 const Keys = require("./../jwt/Keys");
@@ -22,26 +21,33 @@ addAuthor = async params => {
   if (params.experience) dataObject.experience = params.experience;
   const author = new Author(dataObject);
   const result = await author.save();
-  const successMail = await SendMail(params.email, token);
+  if (result) {
+    const token = await Keys.getJwtToken({
+      _id: result._id,
+      email: result.email
+    });
+    await SendMail(params.email, token, "author");
+  }
   return result;
 };
 
 getAuthor = async id => {
-  if (!validateId(id)) return 0;
-  const result = Author.findById(id);
+  const result = Author.findById(id).select("-password");
   if (result) return result;
   else return 0;
 };
 
 updateAuthor = async (id, params) => {
-  if (!validateId(id)) return 0;
   const queryResult = await Author.findById(id);
   if (!queryResult) return 0;
   const newAuthorObject = {
-    name: params.name,
+    ...queryResult,
     description: params.description,
-    phone: params.phone
+    phone: params.phone,
+    password: await Encrypt.getHashedPassword(params.password)
   };
+  if (params.experience) newAuthorObjec.experience = params.experience;
+
   queryResult.set(newAuthorObject);
   const result = await queryResult.save();
   return result;

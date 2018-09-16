@@ -5,6 +5,7 @@ const PampletActions = require("./../actions/PampletActions");
 const HandleError = require("./../errors/HandleErrors");
 const AuthActions = require("./../actions/AuthActions");
 const validateDesignes = require("./../validators/validateDesignes");
+const validateMongooseId = require("./../validators/validateMongooseId");
 
 const upload = Storage.pampletImageStorage();
 
@@ -30,6 +31,7 @@ router.get(
 
 router.get(
   "/:id",
+  validateMongooseId(),
   HandleError(async (req, res) => {
     const result = await PampletActions.getSpecificPamplet(req.params.id);
     if (result) res.status(200).send(result);
@@ -40,6 +42,7 @@ router.get(
 router.patch(
   "/:id",
   AuthActions.validateToken(),
+  validateMongooseId(),
   validateDesignes(),
   HandleError(async (req, res) => {
     const result = await PampletActions.updatePamplet(req.params.id, req.body);

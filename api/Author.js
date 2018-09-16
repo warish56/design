@@ -4,8 +4,7 @@ const AuthorActions = require("./../actions/AuthorActions");
 const HandleError = require("./../errors/HandleErrors");
 const AuthActions = require("./../actions/AuthActions");
 const validateAuthor = require("./../validators/validateAuthor");
-const jwt = require("jsonwebtoken");
-const config = require("config");
+const validateMongooseId = require("./../validators/validateMongooseId");
 
 router.post(
   "/",
@@ -19,6 +18,7 @@ router.post(
 
 router.get(
   "/:id",
+  validateMongooseId(),
   HandleError(async (req, res) => {
     const result = await AuthorActions.getAuthor(req.params.id);
     if (result) res.status(200).send(result);
@@ -29,9 +29,10 @@ router.get(
 router.patch(
   "/:id",
   AuthActions.validateToken(),
+  validateMongooseId(),
   HandleError(async (req, res) => {
     const result = await AuthorActions.updateAuthor(req.params.id, req.body);
-    if (result) res.status(200).send(result);
+    if (result) res.status(200).send("Author Updated");
     else res.status(404).send(`Author with ID: ${req.params.id} Not Found`);
   })
 );

@@ -1,5 +1,4 @@
 const Certificate = require("./../schema/CertificatesSchema");
-const validateId = require("./../helper/ValidateId");
 const getImagePath = require("./../helper/GetPath");
 
 addCertificate = async (params, file) => {
@@ -17,7 +16,10 @@ addCertificate = async (params, file) => {
 };
 
 getAllCertificates = async () => {
-  const queryResult = await Certificate.find().populate("author");
+  const queryResult = await Certificate.find().populate({
+    path: "author",
+    select: { name: 1, email: 1 }
+  });
   if (queryResult.length !== 0) {
     //  setting image path
     queryResult.forEach((item, index) => {
@@ -30,15 +32,16 @@ getAllCertificates = async () => {
 };
 
 getSpecificCertificate = async id => {
-  if (!validateId(id)) return 0;
-  const queryResult = await Certificate.findById(id).populate("author");
+  const queryResult = await Certificate.findById(id).populate({
+    path: "author",
+    select: { name: 1, email: 1 }
+  });
   queryResult.image = getImagePath(queryResult.image);
   if (queryResult) return queryResult;
   else return 0;
 };
 
 updateCertificate = async (id, params) => {
-  if (!validateId(id)) return 0;
   const queryResult = await Certificate.findById(id);
   if (!queryResult) return 0;
   const newCertificateObject = {
