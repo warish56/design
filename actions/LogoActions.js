@@ -1,5 +1,5 @@
 const Logo = require("./../schema/LogoSchema");
-const getImagePath = require("./../helper/GetPath");
+const getImagePath = require("./../helper/GetImagePath");
 
 addLogo = async (params, file) => {
   const dataObject = {
@@ -12,6 +12,7 @@ addLogo = async (params, file) => {
   if (dataObject.likes) dataObject.likes = params.likes;
   const logo = new Logo(dataObject);
   const result = await logo.save();
+  if (!result) throw new Error("Internal Server Error -500");
   return result;
 };
 
@@ -25,10 +26,8 @@ getAllLogos = async () => {
     queryResult.forEach((item, index) => {
       if (item.image) queryResult[index].image = getImagePath(item.image);
     });
-    return queryResult;
-  } else {
-    return 0;
   }
+  return queryResult;
 };
 
 getSpecificLogo = async id => {
@@ -36,14 +35,14 @@ getSpecificLogo = async id => {
     path: "author",
     select: { name: 1, email: 1 }
   });
+  if (!queryResult) throw new Error("logo Not Found -404");
   queryResult.image = getImagePath(queryResult.image);
-  if (queryResult) return queryResult;
-  else return 0;
+  return queryResult;
 };
 
 updateLogo = async (id, params) => {
   const queryResult = await Logo.findById(id);
-  if (!queryResult) return 0;
+  if (!queryResult) throw new Error("logo Not Found -404");
   const newLogoObject = {
     name: params.name,
     description: params.description,
@@ -52,6 +51,7 @@ updateLogo = async (id, params) => {
   };
   queryResult.set(newLogoObject);
   const result = await queryResult.save();
+  if (!result) throw new Error("Internal Server Error -500");
   return result;
 };
 

@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 const User = require("./../schema/UserSchema");
-const Encrypt = require("./../helper/GetHashedPassword");
+const Encrypt = require("./../encrypt_decrypt_Password/Password");
 const SendMail = require("./../email/SendMail");
 const Keys = require("./../jwt/Keys");
 
 addUser = async params => {
   const user = await User.findOne({ email: params.email });
-  if (user) return 0;
+  if (user) throw new Error("User Already registered With The same Email -400");
 
   const dataObject = {
     name: params.name,
@@ -17,14 +17,13 @@ addUser = async params => {
 
   const newUser = new User(dataObject);
   const result = await newUser.save();
-  if (result) {
-    const token = await Keys.getJwtToken({
-      _id: result._id,
-      email: result.email
-    });
-    await SendMail(params.email, token, "user");
-  }
+  if (!result) throw new Error("Internal Server Error -500");
 
+  const token = await Keys.getJwtToken({
+    _id: result._id,
+    email: result.email
+  });
+  await SendMail.sendVerifyEmail(params.email, token, "user");
   return result;
 };
 

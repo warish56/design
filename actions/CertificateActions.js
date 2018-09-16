@@ -1,5 +1,5 @@
 const Certificate = require("./../schema/CertificatesSchema");
-const getImagePath = require("./../helper/GetPath");
+const getImagePath = require("./../helper/GetImagePath");
 
 addCertificate = async (params, file) => {
   const dataObject = {
@@ -12,6 +12,7 @@ addCertificate = async (params, file) => {
   if (dataObject.likes) dataObject.likes = params.likes;
   const certificate = new Certificate(dataObject);
   const result = await certificate.save();
+  if (!result) throw new Error("Internal Server Error -500");
   return result;
 };
 
@@ -25,10 +26,8 @@ getAllCertificates = async () => {
     queryResult.forEach((item, index) => {
       if (item.image) queryResult[index].image = getImagePath(item.image);
     });
-    return queryResult;
-  } else {
-    return 0;
   }
+  return queryResult;
 };
 
 getSpecificCertificate = async id => {
@@ -36,14 +35,14 @@ getSpecificCertificate = async id => {
     path: "author",
     select: { name: 1, email: 1 }
   });
+  if (!queryResult) throw new Error("Certificate Not Found -404");
   queryResult.image = getImagePath(queryResult.image);
-  if (queryResult) return queryResult;
-  else return 0;
+  return queryResult;
 };
 
 updateCertificate = async (id, params) => {
   const queryResult = await Certificate.findById(id);
-  if (!queryResult) return 0;
+  if (!queryResult) throw new Error("Certificate Not Found -404");
   const newCertificateObject = {
     name: params.name,
     description: params.description,
@@ -52,6 +51,7 @@ updateCertificate = async (id, params) => {
   };
   queryResult.set(newCertificateObject);
   const result = await queryResult.save();
+  if (!result) throw new Error("Internal Server Error -500");
   return result;
 };
 

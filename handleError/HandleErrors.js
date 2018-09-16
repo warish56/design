@@ -4,10 +4,8 @@ function handleError(handler) {
       await handler(req, res);
     } catch (er) {
       console.log(er);
-      let errorArray = [];
-      for (fields in er.errors)
-        errorArray = [...errorArray, er.errors[fields].message];
-      next(errorArray);
+      const error = er.message.split("-");
+      next(error);
     }
   };
 }

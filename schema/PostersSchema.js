@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const GetImagePath = require("./../helper/GetPath");
 const PosterSchema = new mongoose.Schema({
   name: {
     type: String,

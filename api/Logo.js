@@ -2,12 +2,14 @@ const express = require("express");
 const router = express.Router();
 const Storage = require("./../multer/Storage");
 const LogoActions = require("./../actions/LogoActions");
-const HandleError = require("./../errors/HandleErrors");
+const HandleError = require("./../handleError/HandleErrors");
 const AuthActions = require("./../actions/AuthActions");
 const validateDesignes = require("./../validators/validateDesignes");
 const validateMongooseId = require("./../validators/validateMongooseId");
 
 const upload = Storage.logoImageStorage();
+
+//  route for adding a new Logo
 router.post(
   "/",
   AuthActions.validateToken(),
@@ -19,25 +21,26 @@ router.post(
   })
 );
 
+//  route for getting all the Logos
 router.get(
   "/",
   HandleError(async (req, res) => {
     const result = await LogoActions.getAllLogos();
-    if (result) res.status(200).send(result);
-    else res.status(404).send("Logo database is empty");
+    res.status(200).send(result);
   })
 );
 
+//  route for getting a specific logo
 router.get(
   "/:id",
   validateMongooseId(),
   HandleError(async (req, res) => {
     const result = await LogoActions.getSpecificLogo(req.params.id);
-    if (result) res.status(200).send(result);
-    else res.status(404).send(`Logo with ID: ${req.params.id} Not Found`);
+    res.status(200).send(result);
   })
 );
 
+// route for updating a logo
 router.patch(
   "/:id",
   AuthActions.validateToken(),
@@ -45,8 +48,7 @@ router.patch(
   validateDesignes(),
   HandleError(async (req, res) => {
     const result = await LogoActions.updateLogo(req.params.id, req.body);
-    if (result) res.status(200).send(result);
-    else res.status(404).send(`Logo with ID: ${req.params.id} Not Found`);
+    res.status(200).send(result);
   })
 );
 

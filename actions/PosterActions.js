@@ -1,6 +1,6 @@
 const Poster = require("./../schema/PostersSchema");
 const validateId = require("./../helper/ValidateId");
-const getImagePath = require("./../helper/GetPath");
+const getImagePath = require("./../helper/GetImagePath");
 
 addPoster = async (params, file) => {
   const dataObject = {
@@ -13,6 +13,7 @@ addPoster = async (params, file) => {
   if (dataObject.likes) dataObject.likes = params.likes;
   const poster = new Poster(dataObject);
   const result = await poster.save();
+  if (!result) throw new Error("Internal Server Error -500");
   return result;
 };
 
@@ -26,10 +27,8 @@ getAllPosters = async () => {
     queryResult.forEach((item, index) => {
       if (item.image) queryResult[index].image = getImagePath(item.image);
     });
-    return queryResult;
-  } else {
-    return 0;
   }
+  return queryResult;
 };
 
 getSpecificPoster = async id => {
@@ -37,14 +36,14 @@ getSpecificPoster = async id => {
     path: "author",
     select: { name: 1, email: 1 }
   });
+  if (!queryResult) throw new Error("Poster Not Found -404");
   queryResult.image = getImagePath(queryResult.image);
-  if (queryResult) return queryResult;
-  else return 0;
+  return queryResult;
 };
 
 updatePoster = async (id, params) => {
   const queryResult = await Poster.findById(id);
-  if (!queryResult) return 0;
+  if (!queryResult) throw new Error("Poster Not Found -404");
   const newPosterObject = {
     name: params.name,
     description: params.description,
@@ -53,6 +52,7 @@ updatePoster = async (id, params) => {
   };
   queryResult.set(newPosterObject);
   const result = await queryResult.save();
+  if (!result) throw new Error("Internal Server Error -500");
   return result;
 };
 

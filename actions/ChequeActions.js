@@ -1,5 +1,5 @@
 const Cheque = require("./../schema/ChequeSchema");
-const getImagePath = require("./../helper/GetPath");
+const getImagePath = require("./../helper/GetImagePath");
 
 addCheque = async (params, file) => {
   const dataObject = {
@@ -12,6 +12,7 @@ addCheque = async (params, file) => {
   if (dataObject.likes) dataObject.likes = params.likes;
   const cheque = new Cheque(dataObject);
   const result = await cheque.save();
+  if (!result) throw new Error("Internal Server Error -500");
   return result;
 };
 
@@ -25,10 +26,8 @@ getAllCheques = async () => {
     queryResult.forEach((item, index) => {
       if (item.image) queryResult[index].image = getImagePath(item.image);
     });
-    return queryResult;
-  } else {
-    return 0;
   }
+  return queryResult;
 };
 
 getSpecificCheque = async id => {
@@ -36,14 +35,14 @@ getSpecificCheque = async id => {
     path: "author",
     select: { name: 1, email: 1 }
   });
+  if (!queryResult) throw new Error("Cheque Not Found -404");
   queryResult.image = getImagePath(queryResult.image);
-  if (queryResult) return queryResult;
-  else return 0;
+  return queryResult;
 };
 
 updateCheque = async (id, params) => {
   const queryResult = await Cheque.findById(id);
-  if (!queryResult) return 0;
+  if (!queryResult) throw new Error("Cheque Not Found -404");
   const newChequeObject = {
     name: params.name,
     description: params.description,
@@ -52,6 +51,7 @@ updateCheque = async (id, params) => {
   };
   queryResult.set(newChequeObject);
   const result = await queryResult.save();
+  if (!result) throw new Error("Internal Server Error -500");
   return result;
 };
 

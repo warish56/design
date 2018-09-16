@@ -1,5 +1,5 @@
 const Pamplet = require("./../schema/PampletsSchema");
-const getImagePath = require("./../helper/GetPath");
+const getImagePath = require("./../helper/GetImagePath");
 
 addPamplet = async (params, file) => {
   const dataObject = {
@@ -12,6 +12,7 @@ addPamplet = async (params, file) => {
   if (dataObject.likes) dataObject.likes = params.likes;
   const pamplet = new Pamplet(dataObject);
   const result = await pamplet.save();
+  if (!result) throw new Error("Internal Server Error -500");
   return result;
 };
 
@@ -25,10 +26,8 @@ getAllPamplets = async () => {
     queryResult.forEach((item, index) => {
       if (item.image) queryResult[index].image = getImagePath(item.image);
     });
-    return queryResult;
-  } else {
-    return 0;
   }
+  return queryResult;
 };
 
 getSpecificPamplet = async id => {
@@ -36,14 +35,14 @@ getSpecificPamplet = async id => {
     path: "author",
     select: { name: 1, email: 1 }
   });
+  if (!queryResult) throw new Error("Pamplet Not Found -404");
   queryResult.image = getImagePath(queryResult.image);
-  if (queryResult) return queryResult;
-  else return 0;
+  return queryResult;
 };
 
 updatePamplet = async (id, params) => {
   const queryResult = await Pamplet.findById(id);
-  if (!queryResult) return 0;
+  if (!queryResult) throw new Error("Pamplet Not Found -404");
   const newPampletObject = {
     name: params.name,
     description: params.description,
@@ -52,6 +51,7 @@ updatePamplet = async (id, params) => {
   };
   queryResult.set(newPampletObject);
   const result = await queryResult.save();
+  if (!result) throw new Error("Internal Server Error -500");
   return result;
 };
 

@@ -2,13 +2,14 @@ const express = require("express");
 const router = express.Router();
 const Storage = require("./../multer/Storage");
 const ChequeActions = require("./../actions/ChequeActions");
-const HandleError = require("./../errors/HandleErrors");
+const HandleError = require("./../handleError/HandleErrors");
 const AuthActions = require("./../actions/AuthActions");
 const validateDesignes = require("./../validators/validateDesignes");
 const validateMongooseId = require("./../validators/validateMongooseId");
 
 const upload = Storage.chequeImageStorage();
 
+//  route for adding a new Cheque
 router.post(
   "/",
   AuthActions.validateToken(),
@@ -20,25 +21,26 @@ router.post(
   })
 );
 
+//  route for getting all Cheques
 router.get(
   "/",
   HandleError(async (req, res) => {
     const result = await ChequeActions.getAllCheques();
-    if (result) res.status(200).send(result);
-    else res.status(404).send("Cheque database is empty");
+    res.status(200).send(result);
   })
 );
 
+//  route for getting a specific cheque
 router.get(
   "/:id",
   validateMongooseId(),
   HandleError(async (req, res) => {
     const result = await ChequeActions.getSpecificCheque(req.params.id);
-    if (result) res.status(200).send(result);
-    else res.status(404).send(`Cheque with ID: ${req.params.id} Not Found`);
+    res.status(200).send(result);
   })
 );
 
+// route for updating a cheque
 router.patch(
   "/:id",
   AuthActions.validateToken(),
@@ -46,8 +48,7 @@ router.patch(
   validateDesignes(),
   HandleError(async (req, res) => {
     const result = await ChequeActions.updateCheque(req.params.id, req.body);
-    if (result) res.status(200).send(result);
-    else res.status(404).send(`Cheque with ID: ${req.params.id} Not Found`);
+    res.status(200).send(result);
   })
 );
 

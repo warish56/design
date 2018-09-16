@@ -43,11 +43,11 @@ listenToDifferentRoutes = () => {
   //  Handelling Error At Last Stage
   app.use((err, req, res, next) => {
     // console.log(err);
-    res.status(500).send(err);
+    res.status(err[1]).send(err[0]);
   });
 };
 
-applyMiddelware = () => {
+checkEnvironMentVariables = () => {
   if (!config.get("jwtPrivateKey")) {
     console.log("JwtKey not found");
     process.exit(1);
@@ -57,6 +57,9 @@ applyMiddelware = () => {
     console.log("emailKey not found");
     process.exit(1);
   }
+};
+
+applyMiddelware = () => {
   app.use(express.json());
   app.use("/logo", express.static("uploads/logoImages"));
   app.use("/poster", express.static("uploads/posterImages"));
@@ -69,3 +72,4 @@ module.exports.connectToMongoDb = connectToMongoDb;
 module.exports.startListeningToPort = startListeningToPort;
 module.exports.listenToDifferentRoutes = listenToDifferentRoutes;
 module.exports.applyMiddelware = applyMiddelware;
+module.exports.checkEnvironMentVariables = checkEnvironMentVariables;

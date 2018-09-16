@@ -1,7 +1,7 @@
 const validate = require("./BodyValidation");
 //  usualyy checks if the route has query parameter of type
 
-validateAuth = () => {
+validateAuthType = () => {
   return (req, res, next) => {
     try {
       if (!req.query.type) {
@@ -20,4 +20,4 @@ validateAuth = () => {
   };
 };
 
-module.exports = validateAuth;
+module.exports = validateAuthType;

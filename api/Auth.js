@@ -1,41 +1,70 @@
 const express = require("express");
 const router = express.Router();
 const AuthActions = require("./../actions/AuthActions");
-const HandleError = require("./../errors/HandleErrors");
+const HandleError = require("./../handleError/HandleErrors");
 const CheckTypeOfToken = require("./../validators/checkTypeOfToken");
-const validateAuth = require("./../validators/validateAuth");
+const validateAuthType = require("./../validators/validateAuthType");
+const validateResetPassword = require("./../validators/validateResetPassword");
 
+//  route for login
 router.post(
   "/",
-  validateAuth(),
+  validateAuthType(),
   HandleError(async (req, res) => {
     const result = await AuthActions.validatePerson(
       req.body.email,
       req.body.password,
       req.query.type
     );
-    if (!result) res.status(401).send("Invalid Credentials");
-    else if (result === 403)
-      res.status(403).send("Please verify your Email First");
-    else
-      res
-        .status(200)
-        .header("design_token", result.token)
-        .send({ id: result._id, name: result.name, email: result.email });
+    res
+      .status(200)
+      .header("design_token", result.token)
+      .send({
+        id: result._id,
+        name: result.name,
+        email: result.email,
+        type: req.query.type
+      });
   })
 );
 
+//  route for sending password Reset Link
+router.post(
+  "/reset_pass",
+  validateAuthType(),
+  HandleError(async (req, res) => {
+    const result = await AuthActions.sendResetPasswordLink(
+      req.body.email,
+      req.query.type
+    );
+    res.status(200).send("Email Sent");
+  })
+);
+
+//  route for changing the password after redirecting from email
+router.post(
+  "/reset_pass/:token",
+  AuthActions.verifyResetPasswordToken(),
+  validateResetPassword(),
+  HandleError(async (req, res) => {
+    const result = await AuthActions.resetPassword(
+      req.token,
+      req.body.password
+    );
+    res.status(200).send("Password Reset Done");
+  })
+);
+
+//  route for verifying user after redirecting from email and marking them as confirmed
 router.get(
   "/verify/:token",
   CheckTypeOfToken(),
-  validateAuth(),
+  validateAuthType(),
   HandleError(async (req, res) => {
     const result = await AuthActions.verifyEmail(
       req.params.token,
       req.query.type
     );
-    if (!result) res.status(401).send("Token is Expired ");
-    if (result === -1) res.status(404).send("User Not Found");
     if (result === 200) res.status(200).redirect("http://localhost:3000");
   })
 );
