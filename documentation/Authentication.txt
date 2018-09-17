@@ -1,0 +1,32 @@
+1. To login a Person
+
+ Post: /auth/?type=(user or author)
+
+ required: {email, password, authType(must be provided in queryType) }
+ return: { _id, name, email, type } and in header('designe_token')
+
+--------------------------------------------------------------------------------------
+ 2. To send a Password reset Link
+
+ Post: /auth/reset_pass?type=(user or author)
+
+ required: { email }
+ return: {'Email Sent'} with status(200)
+
+ ---------------------------------------------------------------------------------------
+
+ 3. To Reset The password after redirectiing from email
+
+  Post: /auth/reset_pass/:token
+   
+   required: { password };
+   return: {'Password reset done'} with status(200)
+
+-----------------------------------------------------------------------------------------
+
+4. To verify the User after clicking on the link in Email (marking as CONFIRM)
+
+  Get: /auth/verify/:token
+
+  required:  { Automatically provided in the Token}
+  return : redirected to localhost:3000 with status(200)

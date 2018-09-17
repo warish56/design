@@ -12,6 +12,29 @@ const ChequeRouter = require("./../api/Cheque");
 const PampletRouter = require("./../api/Pamplet");
 const CertificateRouter = require("./../api/Certificate");
 
+
+applyMiddelware = () => {
+  app.use(express.json());
+  app.use("/logo", express.static("uploads/logoImages"));
+  app.use("/poster", express.static("uploads/posterImages"));
+  app.use("/pamplet", express.static("uploads/pampletsImages"));
+  app.use("/certificate", express.static("uploads/certificateImages"));
+  app.use("/cheque", express.static("uploads/chequeImages"));
+};
+
+checkEnvironMentVariables = () => {
+  if (!config.get("jwtPrivateKey")) {
+    console.log("JwtKey not found");
+    process.exit(1);
+  }
+
+  if (!config.get("emailKey")) {
+    console.log("emailKey not found");
+    process.exit(1);
+  }
+};
+
+
 connectToMongoDb = () => {
   mongoose
     .connect("mongodb://localhost/design")
@@ -23,12 +46,6 @@ connectToMongoDb = () => {
     });
 };
 
-startListeningToPort = () => {
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => {
-    console.log(`listning to port ${port}`);
-  });
-};
 
 listenToDifferentRoutes = () => {
   app.use("/auth", AuthRouter);
@@ -47,26 +64,18 @@ listenToDifferentRoutes = () => {
   });
 };
 
-checkEnvironMentVariables = () => {
-  if (!config.get("jwtPrivateKey")) {
-    console.log("JwtKey not found");
-    process.exit(1);
-  }
 
-  if (!config.get("emailKey")) {
-    console.log("emailKey not found");
-    process.exit(1);
-  }
+startListeningToPort = () => {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`listning to port ${port}`);
+  });
 };
 
-applyMiddelware = () => {
-  app.use(express.json());
-  app.use("/logo", express.static("uploads/logoImages"));
-  app.use("/poster", express.static("uploads/posterImages"));
-  app.use("/pamplet", express.static("uploads/pampletsImages"));
-  app.use("/certificate", express.static("uploads/certificateImages"));
-  app.use("/cheque", express.static("uploads/chequeImages"));
-};
+
+
+
+
 
 module.exports.connectToMongoDb = connectToMongoDb;
 module.exports.startListeningToPort = startListeningToPort;

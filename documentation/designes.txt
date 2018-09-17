@@ -1,0 +1,50 @@
+
+1. adding a designe  
+   
+   Post: designe-name/
+   required: { name, description(minlength-10), author(Id), tag(Array)(NOt Empty), image(Link), likes(?)(min-0) }
+   return
+   {
+     name:,
+    description: ,
+    author: {
+      name: ,
+      email: ,
+    }
+    tag: ,
+    image: ,
+    likes: , (optional)
+   }
+------------------------------------------------------------------------------------------------
+2. getiing a single designe return 
+
+  Get: designe-name/:id
+   {
+     name:,
+    description: ,
+    author: {
+      name: ,
+      email: ,
+    }
+    tag: ,
+    image: ,
+    likes: , (optional)
+   }
+------------------------------------------------------------------------------------------------
+3.  updating a designe 
+
+   Post: designe-name/:id
+   required: { name, description(minlength-10), author(Id), tag(Array)(NOt Empty), image(Link), likes(?)(min-0) }
+   return
+     {
+     name:,
+    description: ,
+    author: {
+      name: ,
+      email: ,
+    }
+    tag: ,
+    image: ,
+    likes: , (optional)
+   }
+  

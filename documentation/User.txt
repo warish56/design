@@ -1,0 +1,9 @@
+1. adding a  user 
+  
+ Post:  /user
+required: { name, email, phone, password(minlength-6)}
+returns
+  {
+    name:,
+    email: ,
+  }

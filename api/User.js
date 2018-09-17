@@ -10,7 +10,7 @@ router.post(
   validateUser(),
   HandleError(async (req, res) => {
     const result = await UserActions.addUser(req.body);
-    res.status(200).send({ name: result.name, email: result.email });
+    res.status(200).send(result);
   })
 );
 

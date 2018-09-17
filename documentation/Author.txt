@@ -1,0 +1,38 @@
+
+1. adding a author 
+  Post: /author
+  required: { name, email, description(minlength-10), phone, password(minlength-6), experience(?) }
+  return: 
+   {
+    name: ,
+    description: ,
+    email: ,
+    phone: ,
+    password: null , (Null is fixed from database to client)
+    experience: , (optional)
+   }
+------------------------------------------------------------------------------------------------
+2. getting a author  
+ Get: /author/:id
+  {
+    name: ,
+    description: ,
+    email: ,
+    phone: ,
+    password: null , (Null is fixed from database to client)
+    experience: , (optional)
+  }
+----------------------------------------------------------------------------------------------------
+ 3. updating a author  
+   Patch: /author/:id
+   required: { name, email, description(minlength-10), phone, password(minlength-6), experience(?) }
+   return:
+    {
+    name: ,
+    description: ,
+    email: ,
+    phone: ,
+    password: null , (Null is fixed from database to client)
+    experience: , (optional)
+
+    } 

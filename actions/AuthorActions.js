@@ -28,14 +28,13 @@ addAuthor = async params => {
     email: result.email
   });
   await SendMail.sendVerifyEmail(params.email, token, "author");
-
-  return result;
+  return { ... result, password: null};
 };
 
 getAuthor = async id => {
   const result = Author.findById(id).select("-password");
   if (!result) throw new Error("Invalid Author Id - 404");
-  return result;
+  return { ... result, password: null};
 };
 
 updateAuthor = async (id, params) => {
@@ -52,7 +51,7 @@ updateAuthor = async (id, params) => {
   queryResult.set(newAuthorObject);
   const result = await queryResult.save();
   if (!result) throw new Error("Internal Server Error -500");
-  return result;
+  return { ... result, password: null};
 };
 
 module.exports.addAuthor = addAuthor;

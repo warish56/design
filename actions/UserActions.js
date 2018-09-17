@@ -24,7 +24,7 @@ addUser = async params => {
     email: result.email
   });
   await SendMail.sendVerifyEmail(params.email, token, "user");
-  return result;
+  return { ...result, password: null };
 };
 
 module.exports.addUser = addUser;
