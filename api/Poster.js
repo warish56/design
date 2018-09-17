@@ -12,7 +12,7 @@ const upload = Storage.posterImageStorage();
 //  route for adding a new Poster
 router.post(
   "/",
-  AuthActions.validateToken(),
+  AuthActions.validateAuthorToken(),
   upload.single("image"),
   validateDesignes(),
   HandleError(async (req, res) => {
@@ -43,7 +43,7 @@ router.get(
 //  route for updating a Poster
 router.patch(
   "/:id",
-  AuthActions.validateToken(),
+  AuthActions.validateAuthorToken(),
   validateMongooseId(),
   validateDesignes(),
   HandleError(async (req, res) => {

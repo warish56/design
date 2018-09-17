@@ -11,7 +11,7 @@ const PosterRouter = require("./../api/Poster");
 const ChequeRouter = require("./../api/Cheque");
 const PampletRouter = require("./../api/Pamplet");
 const CertificateRouter = require("./../api/Certificate");
-
+const OrderRouter = require("./../api/Order");
 
 applyMiddelware = () => {
   app.use(express.json());
@@ -32,8 +32,17 @@ checkEnvironMentVariables = () => {
     console.log("emailKey not found");
     process.exit(1);
   }
-};
 
+  if (!config.get("admin_email")) {
+    console.log("admin_email not found");
+    process.exit(1);
+  }
+
+  if (!config.get("admin_password")) {
+    console.log("admin_password not found");
+    process.exit(1);
+  }
+};
 
 connectToMongoDb = () => {
   mongoose
@@ -46,7 +55,6 @@ connectToMongoDb = () => {
     });
 };
 
-
 listenToDifferentRoutes = () => {
   app.use("/auth", AuthRouter);
   app.use("/user", UserRouter);
@@ -56,6 +64,7 @@ listenToDifferentRoutes = () => {
   app.use("/pamplet", PampletRouter);
   app.use("/certificate", CertificateRouter);
   app.use("/cheque", ChequeRouter);
+  app.use("/order", OrderRouter);
 
   //  Handelling Error At Last Stage
   app.use((err, req, res, next) => {
@@ -64,18 +73,12 @@ listenToDifferentRoutes = () => {
   });
 };
 
-
 startListeningToPort = () => {
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
     console.log(`listning to port ${port}`);
   });
 };
-
-
-
-
-
 
 module.exports.connectToMongoDb = connectToMongoDb;
 module.exports.startListeningToPort = startListeningToPort;

@@ -23,6 +23,10 @@ const UserSchema = new mongoose.Schema({
   confirm: {
     type: Boolean,
     default: false
+  },
+  orders: {
+    type: Array,
+    default: []
   }
 });
 

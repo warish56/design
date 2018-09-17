@@ -1,4 +1,6 @@
 {
   "jwtPrivateKey": "jwtPrivateKey",
-  "emailKey": "emailKey"
+  "emailKey": "emailKey",
+  "admin_email": "admin_email",
+  "admin_password": "admin_password"
 }

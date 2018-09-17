@@ -12,7 +12,7 @@ const upload = Storage.pampletImageStorage();
 //  route for adding a new Pamplet
 router.post(
   "/",
-  AuthActions.validateToken(),
+  AuthActions.validateAuthorToken(),
   upload.single("image"),
   validateDesignes(),
   HandleError(async (req, res) => {
@@ -43,7 +43,7 @@ router.get(
 // route to update a pamplet
 router.patch(
   "/:id",
-  AuthActions.validateToken(),
+  AuthActions.validateAuthorToken(),
   validateMongooseId(),
   validateDesignes(),
   HandleError(async (req, res) => {

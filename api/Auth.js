@@ -5,11 +5,14 @@ const HandleError = require("./../handleError/HandleErrors");
 const CheckTypeOfToken = require("./../validators/checkTypeOfToken");
 const validateAuthType = require("./../validators/validateAuthType");
 const validateResetPassword = require("./../validators/validateResetPassword");
-
+const validateLogin = require("./../validators/validateLogin");
+const IsAdmin = require("./../validators/IsAdmin");
 //  route for login
 router.post(
   "/",
+  IsAdmin(),
   validateAuthType(),
+  validateLogin(),
   HandleError(async (req, res) => {
     const result = await AuthActions.validatePerson(
       req.body.email,
@@ -18,7 +21,10 @@ router.post(
     );
     res
       .status(200)
-      .header("design_token", result.token)
+      .header(
+        req.query.type === "user" ? "user_token" : "author_token",
+        result.token
+      )
       .send({
         id: result._id,
         name: result.name,
@@ -65,7 +71,7 @@ router.get(
       req.params.token,
       req.query.type
     );
-    if (result === 200) res.status(200).redirect("http://localhost:3000");
+    if (result === 200) res.status(200).send("confirmed");
   })
 );
 

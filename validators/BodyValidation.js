@@ -10,7 +10,7 @@ validate = function(fieldname, value) {
 
   this.isId = () => {
     if (!mongoose.Types.ObjectId.isValid(value))
-      errors = [...errors, `${fieldname} is Not  Valid`];
+      errors = [...errors, `${fieldname} is Not a Valid Id`];
     return this;
   };
 

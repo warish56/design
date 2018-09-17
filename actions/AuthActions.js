@@ -5,7 +5,7 @@ const Keys = require("./../jwt/Keys");
 const SendMail = require("./../email/SendMail");
 
 //  Middleware
-validateToken = () => {
+validateAuthorToken = () => {
   return (req, res, next) => {
     if (!req.header("design_token")) {
       res.status(400).send("No token found");
@@ -13,14 +13,53 @@ validateToken = () => {
     }
     try {
       const decodedToken = Keys.verifyJwtToken(req.header("design_token"));
-      if (decodedToken.type === "user") {
+      if (decodedToken.type !== "author") {
         res.status(403).send("Unauthorized");
         return;
       }
       req.user = decodedToken;
       next();
     } catch (ex) {
-      console.log(ex);
+      res.status(401).send("Invalid token");
+    }
+  };
+};
+
+validateUserToken = () => {
+  return (req, res, next) => {
+    if (!req.header("user_token")) {
+      res.status(400).send("No token found");
+      return;
+    }
+    try {
+      const decodedToken = Keys.verifyJwtToken(req.header("user_token"));
+      if (decodedToken.type !== "user") {
+        res.status(403).send("Unauthorized");
+        return;
+      }
+      req.user = decodedToken;
+      next();
+    } catch (ex) {
+      res.status(401).send("Invalid token");
+    }
+  };
+};
+
+validateAdminToken = () => {
+  return (req, res, next) => {
+    if (!req.header("admin_token")) {
+      res.status(400).send("No token found");
+      return;
+    }
+    try {
+      const decodedToken = Keys.verifyJwtToken(req.header("admin_token"));
+      if (decodedToken.type !== "admin") {
+        res.status(403).send("Unauthorized");
+        return;
+      }
+      req.user = decodedToken;
+      next();
+    } catch (ex) {
       res.status(401).send("Invalid token");
     }
   };
@@ -46,21 +85,11 @@ validatePerson = async (email, password, type) => {
   //  first validate email
   //  check the email is present or not
   //  validate password
-
   const person =
     type === "author"
-      ? await Author.findOne({ email: email }).select({
-          name: 1,
-          email: 1,
-          phone: 1
-        })
-      : await User.findOne({ email: email }).select({
-          name: 1,
-          email: 1,
-          phone: 1
-        });
+      ? await Author.findOne({ email: email })
+      : await User.findOne({ email: email });
   if (!person) throw new Error("Invalid crdentials -404");
-
   // first checking if email is verifed
   if (!person.confirm) throw new Error("Please verify Your Email -403");
   //  checking if author has valid password
@@ -74,8 +103,16 @@ validatePerson = async (email, password, type) => {
     email: person.email,
     type
   });
-  person.token = token;
-  return person;
+
+  const newPerson = { ...person._doc, password: null, token };
+  return newPerson;
+};
+
+createAdminToken = async () => {
+  const token = await Keys.getJwtToken({
+    type: "admin"
+  });
+  return token;
 };
 
 confirmAuhtorAccount = async id => {
@@ -135,7 +172,10 @@ resetPassword = async (token, password) => {
 };
 
 module.exports.validatePerson = validatePerson;
-module.exports.validateToken = validateToken;
+module.exports.validateAuthorToken = validateAuthorToken;
+module.exports.validateUserToken = validateUserToken;
+module.exports.validateAdminToken = validateAdminToken;
+module.exports.createAdminToken = createAdminToken;
 module.exports.verifyEmail = verifyEmail;
 module.exports.resetPassword = resetPassword;
 module.exports.verifyResetPasswordToken = verifyResetPasswordToken;

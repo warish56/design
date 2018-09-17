@@ -29,7 +29,7 @@ router.get(
 //  route for updating author
 router.patch(
   "/:id",
-  AuthActions.validateToken(),
+  AuthActions.validateAuthorToken(),
   validateMongooseId(),
   HandleError(async (req, res) => {
     const result = await AuthorActions.updateAuthor(req.params.id, req.body);
